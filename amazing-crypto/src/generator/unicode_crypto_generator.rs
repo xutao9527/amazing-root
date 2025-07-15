@@ -25,7 +25,7 @@ impl UnicodeCryptoCharRange {
 }
 
 pub struct UnicodeCryptoGenerator {
-    unicode_crypto_char_ranges: Vec<UnicodeCryptoCharRange>,
+    // unicode_crypto_char_ranges: Vec<UnicodeCryptoCharRange>,
     unicode_crypto_dict: Vec<char>,
 }
 
@@ -51,7 +51,7 @@ impl UnicodeCryptoGenerator {
         let mut rng = rng();
         all_chars.shuffle(&mut rng);
         UnicodeCryptoGenerator {
-            unicode_crypto_char_ranges: ranges,
+            // unicode_crypto_char_ranges: ranges,
             unicode_crypto_dict: all_chars,
         }
     }
@@ -63,16 +63,19 @@ impl UnicodeCryptoGenerator {
         writeln!(file, "// AUTO-GENERATED FILE. DO NOT EDIT.").unwrap();
         writeln!(file, "").unwrap();
 
-        writeln!(
-            file,
-            "pub const CRYPTO_CHARS: [char; {}] = [",
-            self.unicode_crypto_dict.len()
-        ).unwrap();
+        writeln!(file, "pub const CRYPTO_CHARS: [char; {}] = [", self.unicode_crypto_dict.len()).unwrap();
         for c in &self.unicode_crypto_dict {
             writeln!(file, "    '\\u{{{:04X}}}',", *c as u32).unwrap();
         }
         writeln!(file, "];").unwrap();
         writeln!(file).unwrap();
+
+        writeln!(file, "use phf::phf_map;\n").unwrap();
+        writeln!(file, "pub static CRYPTO_CHAR_TO_INDEX: phf::Map<char, usize> = phf_map! {{").unwrap();
+        for (i, c) in self.unicode_crypto_dict.iter().enumerate() {
+            writeln!(file, "    '\\u{{{:04X}}}' => {},", *c as u32, i).unwrap();
+        }
+        writeln!(file, "}};").unwrap();
     }
     
     

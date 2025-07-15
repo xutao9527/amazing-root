@@ -1,9 +1,13 @@
+use std::fs::{read_to_string, write};
 use crate::dict::unicode_crypto_dict::{CRYPTO_CHARS, CRYPTO_CHAR_TO_INDEX};
 
-pub fn decode(text:& str) -> Vec<u8> {
-    let chars: Vec<char> = text.chars().collect();
+pub fn decode_file(input_path: &str, output_path: &str){
+    let content = read_to_string(input_path).unwrap();
+    let chars: Vec<char> = content.chars().collect();
+
     let mut bytes = Vec::new();
     let mut i = 0;
+
     while i < chars.len() {
         let c = chars[i];
         if c == CRYPTO_CHARS[65536] {
@@ -29,7 +33,6 @@ pub fn decode(text:& str) -> Vec<u8> {
             }
         }
     }
-    bytes
+    write(output_path, bytes).unwrap()
+  
 }
-
-
