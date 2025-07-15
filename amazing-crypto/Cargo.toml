@@ -1,0 +1,8 @@
+[package]
+name = "amazing-crypto"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+phf = { version = "0.12.1", features = ["macros"] }
+rand = "0.9.1"

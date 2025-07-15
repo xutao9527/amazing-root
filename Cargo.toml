@@ -1,0 +1,3 @@
+[workspace]
+members = ["amazing-crypto"]
+resolver = "3"
