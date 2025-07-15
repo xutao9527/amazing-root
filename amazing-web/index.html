@@ -5,6 +5,24 @@
     <title>Title</title>
 </head>
 <body>
-
+<img id="output" alt="图片将出现在这里" />
 </body>
+<script type="module">
+    import init,{decode_unicode} from "./wasm/amazing_wasm.js";
+
+    async function main() {
+        await init();
+        const response = await fetch('https://raw.githubusercontent.com/xutao9527/amazing-root/refs/heads/master/amazing-data/12179.txt');
+        const text = await response.text();
+        const byteArray = decode_unicode(text);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+        const img = document.getElementById('output');
+        img.src = url;
+    }
+
+    main().catch(err => {
+        console.error("解码失败:", err);
+    });
+</script>
 </html>
