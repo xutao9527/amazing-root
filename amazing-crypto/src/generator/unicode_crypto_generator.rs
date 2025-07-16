@@ -1,5 +1,5 @@
-use rand::rng;
-use rand::seq::SliceRandom;
+// use rand::rng;
+// use rand::seq::SliceRandom;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
@@ -30,6 +30,8 @@ pub struct UnicodeCryptoGenerator {
 }
 
 impl UnicodeCryptoGenerator {
+
+    #[allow(dead_code)]
     pub fn new() -> Self {
         let ranges = vec![
             UnicodeCryptoCharRange::new(0x0020 + 1, 0x0080 - 1 - 1), //  一字节字符
@@ -48,14 +50,14 @@ impl UnicodeCryptoGenerator {
             all_chars.extend(chars);
         }
 
-        let mut rng = rng();
-        all_chars.shuffle(&mut rng);
+        // let mut rng = rng();
+        // all_chars.shuffle(&mut rng);
         UnicodeCryptoGenerator {
             // unicode_crypto_char_ranges: ranges,
             unicode_crypto_dict: all_chars,
         }
     }
-    
+    #[allow(dead_code)]
     pub fn run(&self) {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
         let out_path = Path::new(&manifest_dir).join("src/dict/unicode_crypto_dict.rs");

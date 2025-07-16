@@ -1,2 +1,2 @@
-pub(crate) mod unicode_crypto_generator;
+pub mod unicode_crypto_generator;
 

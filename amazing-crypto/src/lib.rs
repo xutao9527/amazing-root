@@ -1,7 +1,6 @@
 pub mod crypto;
-pub mod generator;
 pub mod dict;
-
+mod generator;
 
 
 #[cfg(test)]
