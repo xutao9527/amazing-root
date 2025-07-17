@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <img id="viewImg" alt="图片将出现在这里"/>
+
+    <video id="video" controls autoplay muted width="640" height="360">
+        您的浏览器不支持 video 标签。
+    </video>
+</body>
+<script>
+    (async function() {
+        const video = document.getElementById("video");
+        const mediaSource = new MediaSource();
+        video.src = URL.createObjectURL(mediaSource);
+
+        // 只绑定一次 sourceopen，避免多次执行
+        mediaSource.addEventListener("sourceopen", onSourceOpen, { once: true });
+
+        async function onSourceOpen() {
+            console.log("🔓 MediaSource opened");
+
+            // 根据你转码后的 H.264 + AAC 文件写 MIME
+            const mime = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+            if (!MediaSource.isTypeSupported(mime)) {
+                console.error("❌ MIME 类型不支持:", mime);
+                return;
+            }
+
+            const sourceBuffer = mediaSource.addSourceBuffer(mime);
+            // 分段模式，不影响我们手动 append
+            sourceBuffer.mode = "segments";
+
+            const response = await fetch("static/test_h264.mp4"); // 请确保路径正确
+            if (!response.body) {
+                console.error("❌ 浏览器不支持流式读取");
+                return;
+            }
+            const reader = response.body.getReader();
+
+            // 等待 SourceBuffer 空闲
+            function waitIdle() {
+                return new Promise(resolve => {
+                    if (!sourceBuffer.updating) {
+                        resolve();
+                    } else {
+                        sourceBuffer.addEventListener("updateend", resolve, { once: true });
+                    }
+                });
+            }
+
+            let chunkIndex = 0;
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    console.log("📦 所有数据读取完成");
+                    // 确保最后一次 append 完成
+                    await waitIdle();
+                    if (mediaSource.readyState === "open") {
+                        mediaSource.endOfStream();
+                        console.log("✅ endOfStream 已调用，播放完毕");
+                    }
+                    break;
+                }
+
+                try {
+                    // 等待前一次 append 完成
+                    await waitIdle();
+                    sourceBuffer.appendBuffer(value);
+                    console.log(`📦 追加第 ${++chunkIndex} 块，大小: ${value.byteLength}`);
+                } catch (err) {
+                    console.error("❌ 追加失败:", err);
+                    break;
+                }
+            }
+        }
+    })();
+</script>
+<script type="module">
+    import init,{decode_unicode} from "./wasm/amazing_wasm.js";
+
+    async function viewImg() {
+        await init();
+        const response = await fetch('./static/12179.txt');
+        const text = await response.text();
+        const byteArray = decode_unicode(text);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(blob);
+        const img = document.getElementById('viewImg');
+        img.src = url;
+    }
+
+
+    viewImg().catch(err => {
+        console.error("解码失败:", err);
+    });
+</script>
+</html>

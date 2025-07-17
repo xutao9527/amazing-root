@@ -1,28 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <title>流式播放</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f5f5f5; }
+    video { border: 1px solid #ccc; border-radius: 8px; }
+  </style>
 </head>
 <body>
-<img id="output" alt="图片将出现在这里" />
-</body>
-<script type="module">
-    import init,{decode_unicode} from "./wasm/amazing_wasm.js";
+<video id="video" controls autoplay muted width="640" height="360"></video>
 
-    async function main() {
-        await init();
-        const response = await fetch('https://raw.githubusercontent.com/xutao9527/amazing-root/refs/heads/master/amazing-data/12179.txt');
-        const text = await response.text();
-        const byteArray = decode_unicode(text);
-        const blob = new Blob([byteArray], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        const img = document.getElementById('output');
-        img.src = url;
+<script>
+  const video = document.getElementById("video");
+  const mediaSource = new MediaSource();
+  video.src = URL.createObjectURL(mediaSource);
+
+  const mimeCodec = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
+  let sourceBuffer;
+  let segmentIndex = 1;
+
+  mediaSource.addEventListener("sourceopen", async () => {
+    console.log("🔓 MediaSource opened");
+    sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+
+    // 第一步加载初始化段
+    const initSegment = await fetch("static/test_h264_dashinit.mp4").then(r => r.arrayBuffer());
+    sourceBuffer.addEventListener("updateend", loadNextSegment, { once: true });
+    sourceBuffer.appendBuffer(initSegment);
+  });
+
+  async function loadNextSegment() {
+    const url = `static/test_h264_dash${segmentIndex}.m4s`;
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        if (resp.status === 404) {
+          console.log(`✅ 所有分片加载完成（共 ${segmentIndex - 1} 段）`);
+          setTimeout(() => {
+            if (mediaSource.readyState === "open") {
+              mediaSource.endOfStream(); // 可选：防止出现糊屏
+            }
+          }, 100);
+          return;
+        } else {
+          throw new Error(`网络错误: ${resp.status}`);
+        }
+      }
+      const segment = await resp.arrayBuffer();
+      if (!sourceBuffer.updating) {
+        sourceBuffer.addEventListener("updateend", loadNextSegment, { once: true });
+        sourceBuffer.appendBuffer(segment);
+        console.log(`📦 加载第 ${segmentIndex} 段`);
+        segmentIndex++;
+      } else {
+        console.warn("⚠️ sourceBuffer 还在 updating，丢弃该段");
+      }
+    } catch (err) {
+      console.error("❌ 加载分片出错:", err);
     }
-
-    main().catch(err => {
-        console.error("解码失败:", err);
-    });
+  }
 </script>
+</body>
 </html>
