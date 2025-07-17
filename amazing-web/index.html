@@ -9,9 +9,28 @@
   </style>
 </head>
 <body>
-<video id="video" controls autoplay muted width="640" height="360"></video>
 
-<script>
+<img id="viewImg" alt="图片将出现在这里"/>
+<video id="video" controls autoplay muted width="640" height="360"></video>
+<script type="module">
+  import init,{decode_unicode} from "./wasm/amazing_wasm.js";
+
+  async function viewImg() {
+    await init();
+    const response = await fetch('./static/test/12179.txt');
+    const text = await response.text();
+    const byteArray = decode_unicode(text);
+    const blob = new Blob([byteArray], { type: 'image/jpeg' });
+    const url = URL.createObjectURL(blob);
+    const img = document.getElementById('viewImg');
+    img.src = url;
+  }
+
+
+  viewImg().catch(err => {
+    console.error("解码失败:", err);
+  });
+
   const video = document.getElementById("video");
   const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
@@ -25,17 +44,21 @@
     sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
 
     // 第一步加载初始化段
-    const initSegment = await fetch("static/test_h264_dashinit.mp4").then(r => r.arrayBuffer());
+    const response = await fetch("./static/test/test_dashinit.txt");
+    const text = await response.text();
+
+    const byteArray = decode_unicode(text);
+
     sourceBuffer.addEventListener("updateend", loadNextSegment, { once: true });
-    sourceBuffer.appendBuffer(initSegment);
+    sourceBuffer.appendBuffer(byteArray);
   });
 
   async function loadNextSegment() {
-    const url = `static/test_h264_dash${segmentIndex}.m4s`;
+    const url = `./static/test/test_dash${segmentIndex}.txt`;
     try {
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        if (resp.status === 404) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        if (response.status === 404) {
           console.log(`✅ 所有分片加载完成（共 ${segmentIndex - 1} 段）`);
           setTimeout(() => {
             if (mediaSource.readyState === "open") {
@@ -44,13 +67,15 @@
           }, 100);
           return;
         } else {
-          throw new Error(`网络错误: ${resp.status}`);
+          throw new Error(`网络错误: ${response.status}`);
         }
       }
-      const segment = await resp.arrayBuffer();
+      const text = await response.text();
+      const byteArray = decode_unicode(text);
+
       if (!sourceBuffer.updating) {
         sourceBuffer.addEventListener("updateend", loadNextSegment, { once: true });
-        sourceBuffer.appendBuffer(segment);
+        sourceBuffer.appendBuffer(byteArray);
         console.log(`📦 加载第 ${segmentIndex} 段`);
         segmentIndex++;
       } else {
