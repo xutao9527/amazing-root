@@ -14,10 +14,10 @@
 <video id="video" controls autoplay muted width="640" height="360"></video>
 <script type="module">
   import init,{decode_unicode} from "./wasm/amazing_wasm.js";
-
+  await init();
   async function viewImg() {
-    await init();
-    const response = await fetch('./static/test/12179.txt');
+
+    const response = await fetch('https://cdn.jsdelivr.net/npm/amazing-data/12179.txt');
     const text = await response.text();
     const byteArray = decode_unicode(text);
     const blob = new Blob([byteArray], { type: 'image/jpeg' });
@@ -44,7 +44,7 @@
     sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
 
     // 第一步加载初始化段
-    const response = await fetch("./static/test/test_dashinit.txt");
+    const response = await fetch("https://cdn.jsdelivr.net/npm/amazing-data/test_dashinit.txt");
     const text = await response.text();
 
     const byteArray = decode_unicode(text);
@@ -54,7 +54,7 @@
   });
 
   async function loadNextSegment() {
-    const url = `./static/test/test_dash${segmentIndex}.txt`;
+    const url = `https://cdn.jsdelivr.net/npm/amazing-data/test_dash${segmentIndex}.txt`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
