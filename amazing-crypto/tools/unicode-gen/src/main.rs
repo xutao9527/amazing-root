@@ -1,5 +1,5 @@
-// use rand::rng;
-// use rand::seq::SliceRandom;
+use rand::rng;
+use rand::seq::SliceRandom;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
@@ -50,8 +50,8 @@ impl UnicodeCryptoGenerator {
             all_chars.extend(chars);
         }
 
-        // let mut rng = rng();
-        // all_chars.shuffle(&mut rng);
+        let mut rng = rng();
+        all_chars.shuffle(&mut rng);
         UnicodeCryptoGenerator {
             // unicode_crypto_char_ranges: ranges,
             unicode_crypto_dict: all_chars,
@@ -60,7 +60,7 @@ impl UnicodeCryptoGenerator {
     #[allow(dead_code)]
     pub fn run(&self) {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let out_path = Path::new(&manifest_dir).join("src/dict/unicode_crypto_dict.rs");
+        let out_path = Path::new(&manifest_dir).join("../../src/dict/unicode_crypto_dict1.rs");
         let mut file = BufWriter::new(File::create(out_path).unwrap());
         writeln!(file, "// AUTO-GENERATED FILE. DO NOT EDIT.").unwrap();
         writeln!(file, "").unwrap();
@@ -79,4 +79,10 @@ impl UnicodeCryptoGenerator {
         }
         writeln!(file, "}};").unwrap();
     }
+}
+
+fn main() {
+    let generator = UnicodeCryptoGenerator::new();
+    generator.run();
+    println!("unicode_crypto_dict.rs generated successfully.");
 }
