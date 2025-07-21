@@ -14,7 +14,6 @@ name = "amazing-wasm"
 version = "0.1.0"
 dependencies = [
  "amazing-crypto",
- "phf",
  "wasm-bindgen",
 ]
 
