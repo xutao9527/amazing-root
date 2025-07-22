@@ -70,7 +70,6 @@ static RANGES: Lazy<Vec<UnicodeCharSection>> = Lazy::new(|| {
     let mut index_offset = 0;
     let r = RAW_RANGES.iter().map(|&(char_begin, char_end)| {
         let mut section = UnicodeCharSection::new(char_begin, char_end);
-        // let chars = section.get_chars();
         index_offset += section.update(index_offset);
         section
     }).collect();
