@@ -73,3 +73,13 @@ pub const RAW_RANGES: &[(u32, u32)] = &[
     (0x3300, 0x3400 - 1),         //  CJK兼容性
     (0xAC00, 0xD7B0 - 1 - 12),    //  易经卦象
 ];
+
+// static RANGES: Lazy<Vec<UnicodeCharSection>> = Lazy::new(|| {
+//     let mut index_offset = 0;
+//     let r = RAW_RANGES.iter().map(|&(char_begin, char_end)| {
+//         let mut section = UnicodeCharSection::new(char_begin, char_end);
+//         index_offset += section.update(index_offset);
+//         section
+//     }).collect();
+//     r
+// });

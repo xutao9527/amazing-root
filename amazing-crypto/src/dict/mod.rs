@@ -2,20 +2,11 @@ use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
 use crate::dict::definition::{UnicodeCharSection, RAW_RANGES};
-use crate::dict::unicode_crypto_dict::RANGES_HARD_CODED;
+use crate::dict::unicode_dict::RANGES_HARD_CODED;
 
-mod unicode_crypto_dict;
+mod unicode_dict;
 mod definition;
 
-// static RANGES: Lazy<Vec<UnicodeCharSection>> = Lazy::new(|| {
-//     let mut index_offset = 0;
-//     let r = RAW_RANGES.iter().map(|&(char_begin, char_end)| {
-//         let mut section = UnicodeCharSection::new(char_begin, char_end);
-//         index_offset += section.update(index_offset);
-//         section
-//     }).collect();
-//     r
-// });
 
 
 // 生成硬编码
@@ -29,7 +20,7 @@ pub fn generate_hardcoded(){
     }
 
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-    let out_path = Path::new(&manifest_dir).join("src/dict/unicode_crypto_dict.rs");
+    let out_path = Path::new(&manifest_dir).join("src/dict/unicode_dict.rs");
     let mut file = BufWriter::new(File::create(out_path).unwrap());
     writeln!(file, "// AUTO-GENERATED FILE. DO NOT EDIT.").unwrap();
 
@@ -49,7 +40,6 @@ pub fn generate_hardcoded(){
     }
     writeln!(file, "];").unwrap();
 }
-
 
 // 字符转索引
 pub fn char_to_index(c: char) -> Option<u32> {
