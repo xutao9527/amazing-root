@@ -7,14 +7,20 @@ mod tests {
     use std::path::Path;
     use crate::crypto::file_decode::decode_file;
     use crate::crypto::file_encode::encode_file;
-    use crate::dict::{char_to_index, index_to_char};
+    use crate::dict::{char_to_index, generate_hardcoded, index_to_char};
 
+    // 生成硬编码
+    #[test]
+    pub fn test_generate_hardcoded(){
+        generate_hardcoded();
+    }
+
+    // 编解码
     #[test]
     pub fn test_crypto(){
         let c = index_to_char(65535);
         let index = char_to_index(c.unwrap());
         println!("c: {}, index: {}", c.unwrap(), index.unwrap());
-        
     }
     
     // 图片编码
@@ -58,7 +64,5 @@ mod tests {
                 output_path.to_str().unwrap(),
             );
         }
-        
-      
     }
 }
