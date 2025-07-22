@@ -59,12 +59,19 @@ impl UnicodeCryptoGenerator {
     }
     #[allow(dead_code)]
     pub fn run(&self) {
+
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let out_path = Path::new(&manifest_dir).join("../../src/dict/unicode_crypto_dict1.rs");
+        let out_path = Path::new(&manifest_dir).join("../../src/dict/unicode_crypto_dict.rs");
         let mut file = BufWriter::new(File::create(out_path).unwrap());
         writeln!(file, "// AUTO-GENERATED FILE. DO NOT EDIT.").unwrap();
         writeln!(file, "").unwrap();
 
+        // 写入必要的 use 语句
+        writeln!(file, "use once_cell::sync::Lazy;").unwrap();
+        writeln!(file, "use std::collections::HashMap;").unwrap();
+        writeln!(file).unwrap();
+
+        // 生成 static CRYPTO_CHARS 初始化
         writeln!(file, "pub const CRYPTO_CHARS: [char; {}] = [", self.unicode_crypto_dict.len()).unwrap();
         for c in &self.unicode_crypto_dict {
             writeln!(file, "    '\\u{{{:04X}}}',", *c as u32).unwrap();
@@ -72,13 +79,32 @@ impl UnicodeCryptoGenerator {
         writeln!(file, "];").unwrap();
         writeln!(file).unwrap();
 
-        writeln!(file, "use phf::phf_map;\n").unwrap();
-        writeln!(file, "pub static CRYPTO_CHAR_TO_INDEX: phf::Map<char, usize> = phf_map! {{").unwrap();
-        for (i, c) in self.unicode_crypto_dict.iter().enumerate() {
-            writeln!(file, "    '\\u{{{:04X}}}' => {},", *c as u32, i).unwrap();
-        }
-        writeln!(file, "}};").unwrap();
+        // 写入动态构建的 CHAR_TO_INDEX
+        writeln!(file, "pub static CHAR_TO_INDEX: Lazy<HashMap<char, usize>> = Lazy::new(|| {{").unwrap();
+        writeln!(file, "    let mut m = HashMap::with_capacity(CRYPTO_CHARS.len());").unwrap();
+        writeln!(file, "    for (i, c) in CRYPTO_CHARS.iter().copied().enumerate() {{").unwrap();
+        writeln!(file, "        m.insert(c, i);").unwrap();
+        writeln!(file, "    }}").unwrap();
+        writeln!(file, "    m").unwrap();
+        writeln!(file, "}});").unwrap();
+    
+        // writeln!(file, "use phf::phf_map;\n").unwrap();
+        // writeln!(file, "pub static CRYPTO_CHAR_TO_INDEX: phf::Map<char, usize> = phf_map! {{").unwrap();
+        // for (i, c) in self.unicode_crypto_dict.iter().enumerate() {
+        //     writeln!(file, "    '\\u{{{:04X}}}' => {},", *c as u32, i).unwrap();
+        // }
+        // writeln!(file, "}};").unwrap();
+        // writeln!(file, "pub fn char_to_index(c: char) -> Option<usize> {{").unwrap();
+        // writeln!(file, "    match c {{").unwrap();
+        // for (i, c) in self.unicode_crypto_dict.iter().enumerate() {
+        //     writeln!(file, "        '\\u{{{:04X}}}' => Some({}),", *c as u32, i).unwrap();
+        // }
+        // writeln!(file, "        _ => None,").unwrap();
+        // writeln!(file, "    }}").unwrap();
+        // writeln!(file, "}}").unwrap();
     }
+    
+    
 }
 
 fn main() {

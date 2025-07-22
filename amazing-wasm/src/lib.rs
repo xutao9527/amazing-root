@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::wasm_bindgen;
-use amazing_crypto::crypto::decode::decode;
+use amazing_crypto::crypto::decode::{decode};
+
+
 /*
     打包说明
     cargo install wasm-pack
@@ -11,3 +13,5 @@ use amazing_crypto::crypto::decode::decode;
 pub fn decode_unicode(text:& str) -> Vec<u8> {
     decode(text)
 }
+
+

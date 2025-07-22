@@ -1,18 +1,28 @@
 pub mod crypto;
 pub mod dict;
 
+
 #[cfg(test)]
 mod tests {
     use std::path::Path;
     use crate::crypto::file_decode::decode_file;
     use crate::crypto::file_encode::encode_file;
+    use crate::dict::{char_to_index, index_to_char};
 
+    #[test]
+    pub fn test_crypto(){
+        let c = index_to_char(65535);
+        let index = char_to_index(c.unwrap());
+        println!("c: {}, index: {}", c.unwrap(), index.unwrap());
+        
+    }
+    
     // 图片编码
     #[test]
     pub fn test_encode_img() {
         encode_file(
             r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179.jpg",
-            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179.txt",
+            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179_test.txt",
         );
     }
 

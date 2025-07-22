@@ -1,26 +1,28 @@
-use crate::dict::unicode_crypto_dict::CRYPTO_CHARS;
+use crate::dict::index_to_char;
 
-pub fn encode(data:&[u8]) -> String {
+pub fn encode(data: &[u8]) -> String {
     let data_len = data.len();
     let data_pairs = data_len / 2;
     let data_has_odd = data_len % 2 == 1;
-   
+
     let mut encoded = String::with_capacity(data_pairs + 2);
-    // 处理完整字节对
+
     for i in 0..data_pairs {
         let hi = data[2 * i];
         let lo = data[2 * i + 1];
         let index = ((hi as usize) << 8) | (lo as usize);
-        let c = CRYPTO_CHARS[index];
-        encoded.push(c);
+        if let Some(c) = index_to_char(index as u32) {
+            encoded.push(c);
+        }
     }
     // 处理奇数字节
     if data_has_odd {
-        let hi = data[data_len  - 1];
+        let hi = data[data_len - 1];
         let index = (hi as usize) << 8;
-        let c = CRYPTO_CHARS[index];
-        encoded.push(c);
-        encoded.push(CRYPTO_CHARS[65536]);
+        if let Some(c) = index_to_char(index as u32) {
+            encoded.push(c);
+            encoded.push(index_to_char(65536).unwrap());
+        }
     }
     encoded
 }
