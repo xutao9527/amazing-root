@@ -18,7 +18,7 @@ mod tests {
     // 编解码
     #[test]
     pub fn test_crypto(){
-        let c = index_to_char(65535);
+        let c = index_to_char(65534);
         let index = char_to_index(c.unwrap());
         println!("c: {}, index: {}", c.unwrap(), index.unwrap());
     }
@@ -27,8 +27,8 @@ mod tests {
     #[test]
     pub fn test_encode_img() {
         encode_file(
-            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179.jpg",
-            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179_test.txt",
+            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test.jpg",
+            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test.txt",
         );
     }
 
@@ -36,8 +36,8 @@ mod tests {
     #[test]
     pub fn test_decode_img() {
         decode_file(
-            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179.txt",
-            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\12179_decode.jpg",
+            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test.txt",
+            r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test_decode.jpg",
         );
     }
 
