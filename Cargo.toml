@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "amazing-crypto",
-    "amazing-crypto/tools/unicode-gen",
     "amazing-wasm"
 ]
 resolver = "3"
