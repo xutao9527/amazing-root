@@ -7,8 +7,6 @@ use crate::dict::unicode_dict::RANGES_HARD_CODED;
 mod unicode_dict;
 mod definition;
 
-
-
 // 生成硬编码
 pub fn generate_hardcoded(){
     let mut index_offset = 0;
