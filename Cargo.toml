@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "amazing-crypto",
-    "amazing-wasm"
+    "amazing-crypto/core",
+    "amazing-wasm",
 ]
 resolver = "3"

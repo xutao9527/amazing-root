@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE. DO NOT EDIT.
-use crate::dict::UnicodeCharSection;
+use crate::codec::define::UnicodeCharSection;
 
 pub const RANGES_HARD_CODED: &[UnicodeCharSection] = &[
     UnicodeCharSection {

@@ -1,11 +1,12 @@
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
-use crate::dict::definition::{UnicodeCharSection, RAW_RANGES};
-use crate::dict::unicode_dict::RANGES_HARD_CODED;
+use crate::codec::define::{UnicodeCharSection, RAW_RANGES};
 
-mod unicode_dict;
-mod definition;
+pub mod define;
+pub mod codec;
+pub mod codec_dict;
+
 
 // 生成硬编码
 pub fn generate_hardcoded(){
@@ -18,11 +19,12 @@ pub fn generate_hardcoded(){
     }
 
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-    let out_path = Path::new(&manifest_dir).join("src/dict/unicode_dict.rs");
+    println!("manifest_dir: {}", manifest_dir);
+    let out_path = Path::new(&manifest_dir).join("src/codec/codec_dict.rs");
     let mut file = BufWriter::new(File::create(out_path).unwrap());
     writeln!(file, "// AUTO-GENERATED FILE. DO NOT EDIT.").unwrap();
 
-    writeln!(file, "use crate::dict::UnicodeCharSection;").unwrap();
+    writeln!(file, "use crate::codec::define::UnicodeCharSection;").unwrap();
     writeln!(file).unwrap();
 
     writeln!(file, "pub const RANGES_HARD_CODED: &[UnicodeCharSection] = &[").unwrap();
@@ -39,23 +41,3 @@ pub fn generate_hardcoded(){
     writeln!(file, "];").unwrap();
 }
 
-// 字符转索引
-pub fn char_to_index(c: char) -> Option<u32> {
-    let code = c as u32;
-    for section in RANGES_HARD_CODED.iter() {
-        if let Some(idx) = section.char_to_index(code) {
-            return Some(idx);
-        }
-    }
-    None
-}
-
-// 索引转字符
-pub fn index_to_char(index: u32) -> Option<char> {
-    for section in RANGES_HARD_CODED.iter() {
-        if let Some(c) = section.index_to_char(index) {
-            return Some(c);
-        }
-    }
-    None
-}

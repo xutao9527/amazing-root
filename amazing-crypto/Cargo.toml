@@ -7,5 +7,3 @@ edition = "2024"
 chacha20 = "0.9.1"
 #getrandom = { version = "0.3.3", features = ["wasm_js"] }
 
-[build]
-#rustflags = ["--cfg", 'getrandom_backend="wasm_js"']

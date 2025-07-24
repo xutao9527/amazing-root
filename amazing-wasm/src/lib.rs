@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::wasm_bindgen;
-use amazing_crypto::crypto::decode::{decode};
+
 
 
 /*
@@ -9,9 +9,9 @@ use amazing_crypto::crypto::decode::{decode};
     切片说明
     MP4Box -dash 5000 -profile live test_h264.mp4
  */
-#[wasm_bindgen]
-pub fn decode_unicode(text:& str) -> Vec<u8> {
-    decode(text)
-}
+// #[wasm_bindgen]
+// pub fn decode_unicode(text:& str) -> Vec<u8> {
+//     //decode(text)
+// }
 
 
