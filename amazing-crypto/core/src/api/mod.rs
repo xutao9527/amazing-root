@@ -31,7 +31,6 @@ pub fn encrypt(data: &mut [u8], secret_key: &str) -> String {
         let mut encoder = FrameEncoder::new(Vec::new());
         encoder.write_all(data).expect("snap write failed");
         let mut compressed = encoder.into_inner().expect("snap finish failed");
-
         // println!("Compression took: {:?}", start.elapsed());
         // println!("data: {:?}", data.len());
         // println!("compressed: {:?}", compressed.len());

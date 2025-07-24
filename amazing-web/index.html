@@ -17,9 +17,10 @@
   await init();
   async function viewImg() {
 
-    const response = await fetch('./static/test.txt');
+    const response = await fetch('./static/test_crypto/test.txt');
     const text = await response.text();
     const byteArray = decode_unicode(text);
+    console.log(byteArray);
     const blob = new Blob([byteArray], { type: 'image/jpeg' });
     const url = URL.createObjectURL(blob);
     const img = document.getElementById('viewImg');
