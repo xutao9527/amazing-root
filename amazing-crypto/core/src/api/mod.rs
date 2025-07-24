@@ -1,11 +1,10 @@
 use std::io::{Read, Write};
 use base64::Engine;
 use base64::engine::general_purpose;
-use zstd::{Decoder, Encoder};
-
 
 use crate::codec::codec::{decode, encode};
 use crate::crypto::chacha_cipher::encrypt_decrypt_binary;
+use snap::{read::FrameDecoder, write::FrameEncoder};
 
 pub fn base64_to_key_nonce(secret_key: &str) -> Option<([u8; 32], [u8; 12])> {
     let bytes = general_purpose::STANDARD.decode(secret_key).ok()?;
@@ -29,12 +28,10 @@ pub fn encrypt(data: &mut [u8], secret_key: &str) -> String {
     if let Some((key, nonce)) = base64_to_key_nonce(secret_key) {
         // let start = Instant::now();
         // 1,压缩
-        let mut compressed = Vec::new();
-        {
-            let mut encoder = Encoder::new(&mut compressed, 10).expect("zstd encoder failed");
-            encoder.write_all(data).expect("zstd write failed");
-            encoder.finish().expect("zstd finish failed");
-        }
+        let mut encoder = FrameEncoder::new(Vec::new());
+        encoder.write_all(data).expect("snap write failed");
+        let mut compressed = encoder.into_inner().expect("snap finish failed");
+
         // println!("Compression took: {:?}", start.elapsed());
         // println!("data: {:?}", data.len());
         // println!("compressed: {:?}", compressed.len());
@@ -53,9 +50,9 @@ pub fn decrypt(data: &str,secret_key: &str) -> Vec<u8>{
         // 2,解密
         encrypt_decrypt_binary(&key, &nonce, &mut buffer);
         // 3,解压
-        let mut decoder = Decoder::new(&buffer[..]).expect("zstd decoder failed");
+        let mut decoder = FrameDecoder::new(&buffer[..]);
         let mut decompressed = Vec::new();
-        decoder.read_to_end(&mut decompressed).expect("zstd decompression failed");
+        decoder.read_to_end(&mut decompressed).expect("snap decompression failed");
         return decompressed;
     }
     Vec::new()
