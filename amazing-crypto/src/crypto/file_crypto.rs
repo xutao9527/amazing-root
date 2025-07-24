@@ -5,6 +5,7 @@ pub fn encrypt_file(input_path: &str, output_path: &str) {
     let key = [0u8; 32];
     let nonce = [0u8; 12];
     let secret_key = key_nonce_to_base64(&key, &nonce);
+    println!("{}", secret_key);
     let mut data = read(input_path).expect("failed to read input file");
     let encoded = encrypt(&mut data, &secret_key);
     write(output_path, encoded).expect("failed to write output file");

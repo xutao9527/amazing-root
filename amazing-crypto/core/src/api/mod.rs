@@ -1,5 +1,4 @@
 use std::io::{Read, Write};
-use std::time::Instant;
 use base64::Engine;
 use base64::engine::general_purpose;
 use zstd::{Decoder, Encoder};
