@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-chacha20 = "0.9.1"
-#getrandom = { version = "0.3.3", features = ["wasm_js"] }
+amazing-crypto-core = { path = "./core" }
+
 

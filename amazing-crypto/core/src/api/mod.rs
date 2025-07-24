@@ -3,8 +3,8 @@ use base64::engine::general_purpose;
 use crate::codec::codec::{decode, encode};
 use crate::crypto::chacha_cipher::encrypt_decrypt_binary;
 
-pub fn base64_to_key_nonce(b64: &str) -> Option<([u8; 32], [u8; 12])> {
-    let bytes = general_purpose::STANDARD.decode(b64).ok()?;
+pub fn base64_to_key_nonce(secret_key: &str) -> Option<([u8; 32], [u8; 12])> {
+    let bytes = general_purpose::STANDARD.decode(secret_key).ok()?;
     if bytes.len() != 44 {
         return None;
     }

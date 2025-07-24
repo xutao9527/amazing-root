@@ -24,13 +24,13 @@ mod tests {
     pub fn test_generate_base64_key(){
         let key = [0u8; 32];
         let nonce = [0u8; 12];
-        let key_base64 = key_nonce_to_base64(&key, &nonce);
-        println!("key_base64: {:?}", key_base64);
-        let kn = base64_to_key_nonce(&key_base64);
-        println!("kn: {:?}", kn);
+        let secret_key = key_nonce_to_base64(&key, &nonce);
+        println!("key_base64: {:?}", secret_key);
+        let key_nonce = base64_to_key_nonce(&secret_key);
+        println!("kn: {:?}", key_nonce);
     }
 
-    // 加解密测试
+    // chacha加解密测试
     #[test]
     pub fn test_chacha_cipher(){
         let key = [0u8; 32];
