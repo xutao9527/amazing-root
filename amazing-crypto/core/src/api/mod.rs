@@ -28,9 +28,7 @@ pub fn key_nonce_to_base64(key: &[u8; 32], nonce: &[u8; 12]) -> String {
 pub fn encrypt(data: &mut [u8], secret_key: &str) -> String {
     // let mut data = data.to_vec();
     if let Some((key, nonce)) = base64_to_key_nonce(secret_key) {
-        // 记录开始时间
-        let start = Instant::now();
-
+        // let start = Instant::now();
         // 1,压缩
         let mut compressed = Vec::new();
         {
@@ -38,16 +36,11 @@ pub fn encrypt(data: &mut [u8], secret_key: &str) -> String {
             encoder.write_all(data).expect("zstd write failed");
             encoder.finish().expect("zstd finish failed");
         }
-        // 计算耗时
-        let duration = start.elapsed();
-        println!("Compression took: {:?}", duration);
-        println!("data: {:?}", data.len());
-        println!("compressed: {:?}", compressed.len());
-
+        // println!("Compression took: {:?}", start.elapsed());
+        // println!("data: {:?}", data.len());
+        // println!("compressed: {:?}", compressed.len());
         // 2,加密
         encrypt_decrypt_binary(&key, &nonce, &mut compressed);
-
-
         // 3,编码
         return encode(&compressed);
     }
