@@ -1,5 +1,10 @@
+use std::io::{Read, Write};
+use std::time::Instant;
 use base64::Engine;
 use base64::engine::general_purpose;
+use zstd::{Decoder, Encoder};
+
+
 use crate::codec::codec::{decode, encode};
 use crate::crypto::chacha_cipher::encrypt_decrypt_binary;
 
@@ -23,17 +28,43 @@ pub fn key_nonce_to_base64(key: &[u8; 32], nonce: &[u8; 12]) -> String {
 pub fn encrypt(data: &mut [u8], secret_key: &str) -> String {
     // let mut data = data.to_vec();
     if let Some((key, nonce)) = base64_to_key_nonce(secret_key) {
-        encrypt_decrypt_binary(&key, &nonce, data);
-        return encode(&data);
+        // 记录开始时间
+        let start = Instant::now();
+
+        // 1,压缩
+        let mut compressed = Vec::new();
+        {
+            let mut encoder = Encoder::new(&mut compressed, 10).expect("zstd encoder failed");
+            encoder.write_all(data).expect("zstd write failed");
+            encoder.finish().expect("zstd finish failed");
+        }
+        // 计算耗时
+        let duration = start.elapsed();
+        println!("Compression took: {:?}", duration);
+        println!("data: {:?}", data.len());
+        println!("compressed: {:?}", compressed.len());
+
+        // 2,加密
+        encrypt_decrypt_binary(&key, &nonce, &mut compressed);
+
+
+        // 3,编码
+        return encode(&compressed);
     }
     String::new()
 }
 
 pub fn decrypt(data: &str,secret_key: &str) -> Vec<u8>{
     if let Some((key, nonce)) = base64_to_key_nonce(secret_key) {
+        // 1,解码
         let mut buffer = decode(data);
+        // 2,解密
         encrypt_decrypt_binary(&key, &nonce, &mut buffer);
-        return buffer;
+        // 3,解压
+        let mut decoder = Decoder::new(&buffer[..]).expect("zstd decoder failed");
+        let mut decompressed = Vec::new();
+        decoder.read_to_end(&mut decompressed).expect("zstd decompression failed");
+        return decompressed;
     }
     Vec::new()
 }

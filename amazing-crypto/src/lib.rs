@@ -23,7 +23,7 @@ mod tests {
             r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test_crypto\test_decode.jpg",
         );
     }
-    
+
     // 视频编码
     #[test]
     pub fn test_decode_video() {
@@ -38,7 +38,7 @@ mod tests {
         //     r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test\test_dash7.m4s",
         //     r"D:\codebase\rustProjects\amazing-root\amazing-web\static\test\test_dash8.m4s",
         // ];
-    
+
         // for input_path  in video_vec {
         //     let input_path = Path::new(input_path);
         //     let output_path = input_path.with_extension("txt");
