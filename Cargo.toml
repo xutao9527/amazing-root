@@ -2,6 +2,7 @@
 members = [
     "amazing-crypto",
     "amazing-crypto/core",
+    "amazing-cli",
     "amazing-wasm",
 ]
 resolver = "3"
