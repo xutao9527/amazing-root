@@ -1,7 +1,6 @@
-mod utils;
-
-use crate::utils::sys_font::add_sys_ui_fonts;
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use eframe::egui;
+mod utils;
 
 fn main() -> eframe::Result {
     let width = 320.0;
@@ -9,12 +8,11 @@ fn main() -> eframe::Result {
     let mut native_options = eframe::NativeOptions::default();
     native_options.viewport = native_options.viewport.with_inner_size([width, height]);
     native_options.centered = true;
-
     eframe::run_native(
         "amazing app",
         native_options,
         Box::new(|cc| {
-            add_sys_ui_fonts(&cc.egui_ctx);
+            utils::sys_font::add_sys_ui_fonts(&cc.egui_ctx);
             Ok(Box::<App>::default())
         }),
     )
